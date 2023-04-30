@@ -19,6 +19,8 @@ repositories {
 }
 
 dependencies {
+    //pagination
+    implementation 'com.github.pagehelper:pagehelper-spring-boot-starter:1.4.6'
     //config mapstruct with lombok
     implementation 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
     implementation 'org.mapstruct:mapstruct:1.5.5.Final'
