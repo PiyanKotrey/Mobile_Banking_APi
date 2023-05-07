@@ -52,12 +52,6 @@ public class AccountTypeServiceImpl implements AccountTypeService{
         throw new ResponseStatusException(HttpStatus.NOT_FOUND,
                 String.format("AccountType with %d is not found",id));
 
-//        AccountType model = accountTypeMapper.selectAccTypeById(id).orElseThrow(()->
-//                new ResponseStatusException(HttpStatus.NOT_FOUND,String.format("User with %d is not found",id)));
-//        model.setId(id);
-//        model = accountTypeMapStruct.updateAccountTypeDtoToAccountType(updateAccTypeDto);
-//        accountTypeMapper.updateById(model);
-//        return this.findAccountTypeById(id);
     }
 
     @Override
