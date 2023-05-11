@@ -22,6 +22,8 @@ public class FileUtil {
     private String fileServerPath;
     @Value("${file.base-url}")
     private String fileBaseUrl;
+    @Value("${file.download-url}")
+    private String fileDownloadUrl;
 
     public FileDto upload(MultipartFile file){
         int lastDotIndex = file.getOriginalFilename().lastIndexOf(".");
@@ -29,7 +31,7 @@ public class FileUtil {
         long size = file.getSize();
         String name = String.format("%s.%s", UUID.randomUUID(),extension);
         String url = String.format("%s%s", fileBaseUrl, name);
-
+        String downloadUrl = String.format("%s%s",fileDownloadUrl,name);
         Path path = Paths.get(fileServerPath + name);
 
         try {
@@ -37,6 +39,7 @@ public class FileUtil {
             return FileDto.builder()
                     .name(name)
                     .url(url)
+                    .downloadUrl(downloadUrl)
                     .extension(extension)
                     .size(size)
                     .build();

@@ -20,9 +20,10 @@ public interface FileService {
      * @return FileDto
      */
     List<FileDto> uploadMultiple(List<MultipartFile> files);
-    String delete(String fileName);
+    void deleteByName(String fileName);
     void deleteAllFile(String directory);
     List<FileDto> findFile(String directory);
     FileDto findFileByName(String directory,String fileName);
     ResponseEntity<Resource> downloadFileByName(String fileName) throws IOException;
+//    Resource download(String name);
 }

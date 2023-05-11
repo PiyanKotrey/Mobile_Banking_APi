@@ -30,6 +30,8 @@ public class FileServiceImpl implements FileService {
     private String fileServerPath;
     @Value("${file.base-url}")
     private String fileBaseUrl;
+    @Value("${file.download-url}")
+    private String fileDownloadUrl;
     private FileUtil fileUtil;
 
     @Autowired
@@ -52,14 +54,16 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public String delete(String fileName) {
+    public void deleteByName(String fileName) {
         Path path = Paths.get(fileServerPath + fileName);
         try {
-            Files.deleteIfExists(path);
+          Boolean isDelete=  Files.deleteIfExists(path);
+          if (!isDelete){
+              throw new ResponseStatusException(HttpStatus.NOT_FOUND,"File name is not found!");
+          }
         } catch (IOException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Delete file failed!");
         }
-        return fileName;
     }
 
     @Override
@@ -84,6 +88,7 @@ public class FileServiceImpl implements FileService {
             paths.filter(Files::isRegularFile).forEach(path -> {
                 String fileName = path.getFileName().toString();
                 String fileUrl = String.format("%s%s", fileBaseUrl, fileName);
+                String downloadUrl = String.format("%s%s",fileDownloadUrl,fileName);
                 String fileExtension = fileName.substring(fileName.lastIndexOf(".") + 1);
                 long fileSize;
                 try {
@@ -94,6 +99,7 @@ public class FileServiceImpl implements FileService {
                 fileDtos.add(FileDto.builder()
                         .name(fileName)
                         .url(fileUrl)
+                        .downloadUrl(downloadUrl)
                         .extension(fileExtension)
                         .size(fileSize)
                         .build());
@@ -113,11 +119,13 @@ public class FileServiceImpl implements FileService {
             if (optionalPath.isPresent()) {
                 Path path = optionalPath.get();
                 String fileUrl = String.format("%s%s", fileBaseUrl, fileName);
+                String downloadUrl = String.format("%s%s",fileDownloadUrl,fileName);
                 String fileExtension = fileName.substring(fileName.lastIndexOf(".") + 1);
                 long fileSize = Files.size(path);
                 return FileDto.builder()
                         .name(fileName)
                         .url(fileUrl)
+                        .downloadUrl(downloadUrl)
                         .extension(fileExtension)
                         .size(fileSize)
                         .build();
@@ -128,6 +136,11 @@ public class FileServiceImpl implements FileService {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Unable to list files.");
         }
     }
+
+//    @Override
+//    public Resource download(String name) {
+//        return null;
+//    }
 
     @Override
     public ResponseEntity<Resource> downloadFileByName(String fileName) throws IOException {

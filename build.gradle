@@ -19,6 +19,7 @@ repositories {
 }
 
 dependencies {
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-security', version: '3.0.6'
     //pagination
     implementation 'com.github.pagehelper:pagehelper-spring-boot-starter:1.4.6'
     //config mapstruct with lombok

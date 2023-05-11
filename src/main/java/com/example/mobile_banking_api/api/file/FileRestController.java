@@ -21,6 +21,7 @@ import java.util.List;
 public class FileRestController {
     private final FileService fileService;
 
+
     @PostMapping
     public BaseRest<?> uploadSing(@RequestPart MultipartFile file) {
         log.info("File Rq = {}", file);
@@ -46,17 +47,10 @@ public class FileRestController {
                 .data(filesDto)
                 .build();
     }
-
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{fileName}")
-    public BaseRest<?> delete(@PathVariable String fileName) {
-        String filename = fileService.delete(fileName);
-        return BaseRest.builder()
-                .status(true)
-                .code(HttpStatus.OK.value())
-                .message("File Have Been Upload Success")
-                .timestamp(LocalDateTime.now())
-                .data(filename)
-                .build();
+    public void delete(@PathVariable String fileName) {
+        fileService.deleteByName(fileName);
     }
 
     @GetMapping
