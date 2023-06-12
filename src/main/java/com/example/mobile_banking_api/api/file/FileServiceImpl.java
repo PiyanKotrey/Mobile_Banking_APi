@@ -13,16 +13,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Stream;
+
 
 @Service
 public class FileServiceImpl implements FileService {
@@ -32,6 +29,8 @@ public class FileServiceImpl implements FileService {
     private String fileBaseUrl;
     @Value("${file.download-url}")
     private String fileDownloadUrl;
+    @Value("${file.download-url-zip}")
+    private String fileDLZip;
     private FileUtil fileUtil;
 
     @Autowired
@@ -57,10 +56,10 @@ public class FileServiceImpl implements FileService {
     public void deleteByName(String fileName) {
         Path path = Paths.get(fileServerPath + fileName);
         try {
-          Boolean isDelete=  Files.deleteIfExists(path);
-          if (!isDelete){
-              throw new ResponseStatusException(HttpStatus.NOT_FOUND,"File name is not found!");
-          }
+            Boolean isDelete = Files.deleteIfExists(path);
+            if (!isDelete) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "File name is not found!");
+            }
         } catch (IOException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Delete file failed!");
         }
@@ -82,13 +81,14 @@ public class FileServiceImpl implements FileService {
         }
     }
 
-    public List<FileDto> findFile(String directory){
+    public List<FileDto> findFile(String directory) {
         List<FileDto> fileDtos = new ArrayList<>();
         try (Stream<Path> paths = Files.list(Paths.get(directory))) {
             paths.filter(Files::isRegularFile).forEach(path -> {
                 String fileName = path.getFileName().toString();
                 String fileUrl = String.format("%s%s", fileBaseUrl, fileName);
-                String downloadUrl = String.format("%s%s",fileDownloadUrl,fileName);
+                String downloadUrl = String.format("%s%s", fileDownloadUrl, fileName);
+                String downloadZip = String.format("%s",fileDLZip);
                 String fileExtension = fileName.substring(fileName.lastIndexOf(".") + 1);
                 long fileSize;
                 try {
@@ -100,6 +100,7 @@ public class FileServiceImpl implements FileService {
                         .name(fileName)
                         .url(fileUrl)
                         .downloadUrl(downloadUrl)
+                        .downloadAllImagesZip(downloadZip)
                         .extension(fileExtension)
                         .size(fileSize)
                         .build());
@@ -119,7 +120,7 @@ public class FileServiceImpl implements FileService {
             if (optionalPath.isPresent()) {
                 Path path = optionalPath.get();
                 String fileUrl = String.format("%s%s", fileBaseUrl, fileName);
-                String downloadUrl = String.format("%s%s",fileDownloadUrl,fileName);
+                String downloadUrl = String.format("%s%s", fileDownloadUrl, fileName);
                 String fileExtension = fileName.substring(fileName.lastIndexOf(".") + 1);
                 long fileSize = Files.size(path);
                 return FileDto.builder()
@@ -136,18 +137,12 @@ public class FileServiceImpl implements FileService {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Unable to list files.");
         }
     }
-
-//    @Override
-//    public Resource download(String name) {
-//        return null;
-//    }
-
     @Override
     public ResponseEntity<Resource> downloadFileByName(String fileName) throws IOException {
-        Path path = Paths.get(fileServerPath+fileName);
+        Path path = Paths.get(fileServerPath + fileName);
         Resource resource = new FileSystemResource(path);
         HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.CONTENT_DISPOSITION,"attachment; file\""+fileName+"\"");
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; file\"" + fileName + "\"");
         return ResponseEntity.ok()
                 .headers(headers)
                 .contentLength(resource.contentLength())
@@ -157,4 +152,9 @@ public class FileServiceImpl implements FileService {
 
 
 }
+
+
+
+
+
 

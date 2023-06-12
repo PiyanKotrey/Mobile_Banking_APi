@@ -6,6 +6,7 @@ import lombok.Builder;
 public record FileDto(String name,
                       String url,
                       String downloadUrl,
+                      String downloadAllImagesZip,
                       String extension,
                       long size) {
 }

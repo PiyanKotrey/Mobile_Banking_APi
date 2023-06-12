@@ -5,6 +5,7 @@ import com.example.mobile_banking_api.base.BaseRest;
 import com.example.mobile_banking_api.base.BaseRest;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -20,6 +21,7 @@ public class AccountTypeRestController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAuthority('SCOPE_account:read')")
     public BaseRest<?> findAll(){
         var accoutTypeDtoList = accountTypeService.findAll();
         return BaseRest.builder()
@@ -31,6 +33,7 @@ public class AccountTypeRestController {
                 .build();
     }
     @GetMapping("/{id}")
+    @PreAuthorize("hasAuthority('SCOPE_account:read')")
     public BaseRest<?> findAccountTypeById(@PathVariable Integer id){
         AccountTypeDto accountTypeDto = accountTypeService.findAccountTypeById(id);
         return BaseRest.builder()
@@ -42,6 +45,7 @@ public class AccountTypeRestController {
                 .build();
     }
     @PostMapping
+    @PreAuthorize("hasAuthority('SCOPE_account:write')")
     public  BaseRest<?> createNewAccountType(@RequestBody @Valid CreateAccountTypeDto createAccountTypeDto){
         AccountTypeDto accountTypeDto = accountTypeService.createNewAccountTypeDto(createAccountTypeDto);
         return BaseRest.builder()
@@ -54,6 +58,7 @@ public class AccountTypeRestController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAuthority('SCOPE_account:update')")
     public BaseRest<?> updateAccTypeById(@PathVariable("id")Integer id,@RequestBody UpdateAccTypeDto updateAccountTypeDto){
         AccountTypeDto accountTypeDto = accountTypeService.updateById(id,updateAccountTypeDto);
         return BaseRest.builder()
@@ -66,6 +71,7 @@ public class AccountTypeRestController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('SCOPE_account:delete')")
     public BaseRest<?> deleteAccTypeById(@PathVariable Integer id){
         Integer deleteAccTypeById = accountTypeService.deleteAccountTypeById(id);
         return BaseRest.builder()

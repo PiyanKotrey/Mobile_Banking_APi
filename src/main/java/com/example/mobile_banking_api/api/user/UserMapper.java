@@ -45,5 +45,10 @@ public interface UserMapper {
                         @Param("gender")String gender,
                         @Param("studentCardId")String studentCardId);
 
+    @Select("SELECT EXISTS(SELECT * FROM users WHERE email = #{email})")
+    boolean existsByEmail(@Param("email") String email);
+
+    @Select("SELECT EXISTS(SELECT * FROM roles WHERE id = #{roleId})")
+    boolean existsByRoleId(Integer roleId);
 
 }
