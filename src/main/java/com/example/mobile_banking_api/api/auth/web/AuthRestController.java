@@ -18,6 +18,18 @@ import java.time.LocalDateTime;
 public class AuthRestController {
     private final AuthService authService;
 
+    @PostMapping("/refresh")
+    public BaseRest<?> refreshToken(@RequestBody TokenDto tokenDto) {
+        AthDto authDto = authService.refreshToken(tokenDto);
+        return BaseRest.builder()
+                .status(true)
+                .code(HttpStatus.OK.value())
+                .message("Token has been refreshed")
+                .timestamp(LocalDateTime.now())
+                .data(authDto)
+                .build();
+    }
+
     @PostMapping("/login")
     public BaseRest<?> login(@Valid @RequestBody LoginDto loginDto){
         AthDto athDto=authService.login(loginDto);
@@ -67,4 +79,5 @@ public class AuthRestController {
 
 
     }
+
 }
